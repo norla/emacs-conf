@@ -1,0 +1,10 @@
+*.dat
+*.eld
+auto-save-list
+/elpa/
+/eshell/
+.*.el
+recentf
+/url/
+projectile.cache
+*~
