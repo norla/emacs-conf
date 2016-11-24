@@ -50,82 +50,83 @@
     ("g" git-gutter "refresh")
     ("q" nil "quit" :exit t)))
 
-;; WIP
-(require 'json)
-
-(defun js-package-deps ()
-  (let* ((project-dir (locate-dominating-file "." "package.json"))
-	 (package-file (concat project-dir "package.json"))
-	 (package-props (json-read-file package-file))
-	 (dependencies (assoc 'dependencies package-props))
-	 (package-deps (mapcar 'car (cdr dependencies)))
-	 )
-    package-deps
-    )
-  )
-
 ;; Autocomplete
-(require 'auto-complete-config)
-(global-auto-complete-mode t)
-(ac-config-default)
-(setq-default ac-sources (append ac-sources '(ac-source-filename ac-source-files-in-current-dir)))
-(ac-set-trigger-key "TAB")
-(ac-set-trigger-key "<tab>")
+(use-package auto-complete-config
+  :config
+  (global-auto-complete-mode t)
+  (ac-config-default)
+  (setq-default ac-sources (append ac-sources '(ac-source-filename ac-source-files-in-current-dir)))
+  (ac-set-trigger-key "TAB")
+  (ac-set-trigger-key "<tab>")
+  )
   
 ;; Projectile
-(require 'projectile)
-(projectile-global-mode)
-(setq projectile-enable-caching nil)
+(use-package projectile
+  :config
+  (projectile-global-mode)
+  (setq projectile-enable-caching nil)
+  )
 
-;; Perspective mode
-(require 'persp-projectile)
-(persp-mode)
+(use-package persp-projectile
+  :config
+  (persp-mode)
+)
 
 ;; Fringes if available
 (if (fboundp 'set-fringe-mode)
     (set-fringe-mode '(7 . 0)))
-;; Neotree
-(setq neo-theme 'nerd)
-(setq neo-toggle-window-keep-p t)
 
-;; Js/node
-(add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
-;;(add-hook 'js2-mode-hook 'ac-js2-mode)
-(add-hook 'js2-mode-hook (lambda () (tern-mode t)))
+(use-package neotree
+  :config
+  (setq neo-theme 'nerd)
+  (setq neo-toggle-window-keep-p t)
+  )
 
-;; auto-complete on "dot"
-(eval-after-load 'tern
-   '(progn
-      (require 'tern-auto-complete)
-      (tern-ac-setup)))
+(use-package js2-mode
+  :mode ("\\.js" . js2-mode)
+  :config
+  ;; Js/node
+  (add-hook 'js2-mode-hook (lambda () (tern-mode t)))
+  
+  ;; auto-complete on "dot"
+  (eval-after-load 'tern
+    '(progn
+       (require 'tern-auto-complete)
+       (tern-ac-setup)))
+  
+  (require 'flycheck)
+  (add-hook 'js2-mode-hook
+	    (lambda () (flycheck-mode t)))
 
-(require 'flycheck)
-(add-hook 'js2-mode-hook
-          (lambda () (flycheck-mode t)))
-
-;; disable jshint since we prefer eslint checking
-(setq-default flycheck-disabled-checkers
-  (append flycheck-disabled-checkers
-	  '(javascript-jshint javascript-jscs)))
-
-(flycheck-add-mode 'javascript-eslint 'js2-mode)
-;; Js2 modes error highlighting interferes with jshint/jscs, so we disable it
-(setq
- js2-mode-show-parse-errors nil
- js2-mode-show-strict-warnings nil)
+  (flycheck-add-mode 'javascript-eslint 'js2-mode)
+  ;; disable jshint since we prefer eslint checking
+  (setq-default flycheck-disabled-checkers
+		(append flycheck-disabled-checkers
+			'(javascript-jshint javascript-jscs)))
+  ;; Js2 modes error highlighting interferes with jshint/jscs, so we disable it
+  (setq
+   js2-mode-show-parse-errors nil
+   js2-mode-show-strict-warnings nil)
+  )
 
 ;; Multiple cursors
-(require 'multiple-cursors)
-(global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
-(global-set-key (kbd "C->") 'mc/mark-next-like-this)
-(global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
-(global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
+(use-package multiple-cursors
+  :bind (
+	 ("C-S-c C-S-c" . mc/edit-lines)
+	 ("C->" . mc/mark-next-like-this)
+	 ("C-<" . mc/mark-previous-like-this)
+	 ("C-c C-<" . mc/mark-all-like-this)
+	 ))
 
 ;; iy-goto-char
-(require 'iy-go-to-char)
-;; works better with multi-cursors
-(add-to-list 'mc/cursor-specific-vars 'iy-go-to-char-start-pos)
-(global-set-key (kbd "M-m") 'iy-go-to-char)
+(use-package iy-goto-char
+  :bind (
+	 ("M-m" . iy-go-to-char)
+	 )
+  :config
+  ;; works better with multi-cursors
+  (add-to-list 'mc/cursor-specific-vars 'iy-go-to-char-start-pos)
+  )
 
 ;; pending-delete mode
 (pending-delete-mode t)
@@ -133,7 +134,6 @@
 ;; Misc
 (global-set-key [C-tab] 'other-window)
 (setq column-number-mode t)
-(setq neo-window-width 38)
 
 ;; Keybindings
 (global-set-key [s-return] 'counsel-projectile-find-file)
