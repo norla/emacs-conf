@@ -12,31 +12,36 @@
   (load-theme 'smyx t)
   (enable-theme 'smyx))
 
-;; Ivy
-(ivy-mode 1)
-(setq ivy-use-virtual-buffers t)
-(global-set-key (kbd "M-x") 'counsel-M-x)
-(global-set-key (kbd "M-y") 'counsel-yank-pop)
-(global-set-key (kbd "C-x C-f") 'counsel-find-file)
-(global-set-key (kbd "C-x l") 'counsel-locate)
+(use-package ivy
+  :bind (
+	 ("M-x" . counsel-M-x)
+	 ("M-y" . counsel-yank-pop)
+	 ("C-x C-f" . counsel-find-file)
+	 )
+  :config
+  (ivy-mode 1)
+  (setq ivy-use-virtual-buffers t)
+)
 
-;; Highlight symbol
-(require 'highlight-symbol)
-(setq highlight-symbol-idle-delay 0.3)
-(add-hook 'js-mode-hook 'highlight-symbol-mode)
-(add-hook 'js2-mode-hook 'highlight-symbol-mode)
-(add-hook 'js3-mode-hook 'highlight-symbol-mode)
+
+(use-package highlight-symbol
+  :config
+  (require 's)
+  (setq highlight-symbol-idle-delay 0.3)
+  (highlight-symbol-mode))
 
 ;; yas-snippets
-(require 's)
-(require 'yasnippet)
-(setq yas-snippet-dirs '("~/dotfiles/snippets"))
-(yas-global-mode 1)
-(define-key yas-keymap (kbd "<return>") 'yas-next-field)
-;; Avoid collision with auto-complete TAB by using shift-tab
-(define-key yas-minor-mode-map (kbd "<tab>") nil)
-(define-key yas-minor-mode-map (kbd "TAB") nil)
-(define-key yas-minor-mode-map (kbd "<backtab>") 'yas-expand)
+;(require 's)
+
+(use-package yasnippet
+  :config
+  (yas-global-mode 1)
+  (define-key yas-keymap (kbd "<return>") 'yas-next-field)
+  ;; Avoid collision with auto-complete TAB by using shift-tab
+  (define-key yas-minor-mode-map (kbd "<tab>") nil)
+  (define-key yas-minor-mode-map (kbd "TAB") nil)
+  (define-key yas-minor-mode-map (kbd "<backtab>") 'yas-expand)
+  )
 
 ;; Git gutter
 (use-package git-gutter
@@ -175,8 +180,6 @@
       )
     ))
 
-;; paren-mode
-(require 'paren)
 
 (defadvice show-paren-function
     (after show-matching-paren-offscreen activate)
