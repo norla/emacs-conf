@@ -12,6 +12,20 @@
   (load-theme 'smyx t)
   (enable-theme 'smyx))
 
+(use-package hydra
+  :config
+  (defhydra hydra-git-gutter ()
+    "git-gutter"
+    ("n" git-gutter:next-hunk "next")
+    ("p" git-gutter:previous-hunk "prev")
+    ("k" git-gutter:revert-hunk "revert")
+    ("s" git-gutter:stage-hunk "stage")
+    ("m" magit-status "magit-status" :exit t)
+    ("g" git-gutter "refresh")
+    ("q" nil "quit" :exit t))
+  (global-set-key (kbd "<f8>") 'hydra-git-gutter/body)
+  )
+
 (use-package ivy
   :bind (
 	 ("M-x" . counsel-M-x)
@@ -149,13 +163,25 @@
 (global-set-key [f1] 'projectile-persp-switch-project)
 (global-set-key [f2] 'balance-windows-area)
 (global-set-key [f3] 'counsel-projectile-ag)
-(global-set-key [f8] 'magit-status)
 (global-set-key [f9] 'my-neotree-toggle)
 (global-set-key [f10] 'my-neotree-project)
 (global-set-key (kbd "C-=") 'er/expand-region)
 (global-set-key (kbd "C-x SPC") 'ace-jump-mode)
 
-;; Editorconfig\
+
+(use-package hydra
+  :config
+  (defhydra hydra-git-gutter (global-map "C-h C-g")
+    "git-gutter"
+    ("n" git-gutter:next-hunk "next")
+    ("p" git-gutter:previous-hunk "prev")
+    ("k" git-gutter:revert-hunk "revert")
+    ("s" git-gutter:stage-hunk "stage")
+    ("m" magit-status "magit-status" :exit t)
+    ("g" git-gutter "refresh")
+    ("q" nil "quit" :exit t))
+  )
+
 (use-package editorconfig
   :config
   (editorconfig-mode 1))
@@ -201,3 +227,5 @@
 (menu-bar-mode -1)
 (toggle-scroll-bar -1)
 (tool-bar-mode -1)
+(setq initial-scratch-message nil)
+(setq inhibit-startup-screen t)
