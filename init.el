@@ -12,6 +12,8 @@
   (load-theme 'smyx t)
   (enable-theme 'smyx))
 
+(use-package default-text-scale)
+
 (use-package hydra
   :config
   (defhydra hydra-git-gutter ()
@@ -23,6 +25,11 @@
     ("m" magit-status "magit-status" :exit t)
     ("g" git-gutter "refresh")
     ("q" nil "quit" :exit t))
+  (defhydra hydra-zoom (global-map "<f2>")
+    "zoom"
+    ("g" default-text-scale-increase "in")
+    ("l" default-text-scale-decrease "out"))
+  (global-set-key (kbd "<f2>") 'hydra-zoom/body)
   (global-set-key (kbd "<f8>") 'hydra-git-gutter/body)
   )
 
@@ -34,8 +41,7 @@
 	 )
   :config
   (ivy-mode 1)
-  (setq ivy-use-virtual-buffers t)
-)
+  (setq ivy-use-virtual-buffers t))
 
 
 (use-package highlight-symbol
@@ -44,18 +50,15 @@
   (setq highlight-symbol-idle-delay 0.3)
   (highlight-symbol-mode))
 
-;; yas-snippets
-;(require 's)
-
 (use-package yasnippet
   :config
+  (require 's)
   (yas-global-mode 1)
   (define-key yas-keymap (kbd "<return>") 'yas-next-field)
   ;; Avoid collision with auto-complete TAB by using shift-tab
   (define-key yas-minor-mode-map (kbd "<tab>") nil)
   (define-key yas-minor-mode-map (kbd "TAB") nil)
-  (define-key yas-minor-mode-map (kbd "<backtab>") 'yas-expand)
-  )
+  (define-key yas-minor-mode-map (kbd "<backtab>") 'yas-expand))
 
 ;; Git gutter
 (use-package git-gutter
@@ -81,15 +84,13 @@
   (ac-config-default)
   (setq-default ac-sources (append ac-sources '(ac-source-filename ac-source-files-in-current-dir)))
   (ac-set-trigger-key "TAB")
-  (ac-set-trigger-key "<tab>")
-  )
+  (ac-set-trigger-key "<tab>"))
   
 ;; Projectile
 (use-package projectile
   :config
   (projectile-global-mode)
-  (setq projectile-enable-caching nil)
-  )
+  (setq projectile-enable-caching nil))
 
 (use-package persp-projectile
   :config
@@ -102,8 +103,7 @@
 (use-package neotree
   :config
   (setq neo-theme 'nerd)
-  (setq neo-toggle-window-keep-p t)
-  )
+  (setq neo-toggle-window-keep-p t))
 
 (use-package js2-mode
   :mode ("\\.js" . js2-mode)
@@ -129,8 +129,7 @@
   ;; Js2 modes error highlighting interferes with jshint/jscs, so we disable it
   (setq
    js2-mode-show-parse-errors nil
-   js2-mode-show-strict-warnings nil)
-  )
+   js2-mode-show-strict-warnings nil))
 
 ;; Multiple cursors
 (use-package multiple-cursors
@@ -138,8 +137,7 @@
 	 ("C-S-c C-S-c" . mc/edit-lines)
 	 ("C->" . mc/mark-next-like-this)
 	 ("C-<" . mc/mark-previous-like-this)
-	 ("C-c C-<" . mc/mark-all-like-this)
-	 ))
+	 ("C-c C-<" . mc/mark-all-like-this)))
 
 ;; iy-goto-char
 (use-package iy-goto-char
@@ -148,8 +146,7 @@
 	 )
   :config
   ;; works better with multi-cursors
-  (add-to-list 'mc/cursor-specific-vars 'iy-go-to-char-start-pos)
-  )
+  (add-to-list 'mc/cursor-specific-vars 'iy-go-to-char-start-pos))
 
 ;; pending-delete mode
 (pending-delete-mode t)
@@ -172,15 +169,14 @@
 (use-package hydra
   :config
   (defhydra hydra-git-gutter (global-map "C-h C-g")
-    "git-gutter"
+    "git"
     ("n" git-gutter:next-hunk "next")
     ("p" git-gutter:previous-hunk "prev")
     ("k" git-gutter:revert-hunk "revert")
     ("s" git-gutter:stage-hunk "stage")
     ("m" magit-status "magit-status" :exit t)
     ("g" git-gutter "refresh")
-    ("q" nil "quit" :exit t))
-  )
+    ("q" nil "quit" :exit t)))
 
 (use-package editorconfig
   :config
@@ -190,8 +186,7 @@
   (interactive)
   (progn
     (neotree-toggle)
-    (balance-windows)
-    ))
+    (balance-windows)))
 
 (defun my-neotree-project ()
   "Open NeoTree using the git root."
@@ -202,10 +197,7 @@
 	  (neotree-dir project-dir)
 	  (other-window 1)
 	  (balance-windows)
-	  )
-      )
-    ))
-
+	  ))))
 
 (defadvice show-paren-function
     (after show-matching-paren-offscreen activate)
@@ -224,7 +216,6 @@
 (set-face-foreground 'show-paren-match "#E0E")
 (set-face-attribute 'show-paren-match nil :weight 'bold)
 
-(menu-bar-mode -1)
 (toggle-scroll-bar -1)
 (tool-bar-mode -1)
 (setq initial-scratch-message nil)
