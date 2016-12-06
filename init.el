@@ -220,3 +220,7 @@
 (tool-bar-mode -1)
 (setq initial-scratch-message nil)
 (setq inhibit-startup-screen t)
+
+;; Right alt should not be meta key
+(when (eq system-type 'darwin)
+  (setq mac-right-option-modifier 'none))
