@@ -60,6 +60,8 @@
   (define-key yas-minor-mode-map (kbd "TAB") nil)
   (define-key yas-minor-mode-map (kbd "<backtab>") 'yas-expand))
 
+;;; Load linum before git gutter to avoid conflict
+(global-linum-mode 1)
 ;; Git gutter
 (use-package git-gutter
   :config
@@ -103,19 +105,28 @@
 (use-package neotree
   :config
   (setq neo-theme 'nerd)
-  (setq neo-toggle-window-keep-p t))
+  (setq neo-toggle-window-keep-p t)
+  (defun my/neotree-hook (_unused)
+    (linum-mode -1))
+  (add-hook 'neo-after-create-hook 'my/neotree-hook))
+
+
+(eval-after-load 'js (define-key js-mode-map (kbd "M-.") nil))
 
 (use-package js2-mode
+  :bind (
+	 ("M-." . find-tag)
+	 )
   :mode ("\\.js" . js2-mode)
   :config
   ;; Js/node
-  (add-hook 'js2-mode-hook (lambda () (tern-mode t)))
+;;  (add-hook 'js2-mode-hook (lambda () (tern-mode t)))
   
   ;; auto-complete on "dot"
-  (eval-after-load 'tern
-    '(progn
-       (require 'tern-auto-complete)
-       (tern-ac-setup)))
+;;  (eval-after-load 'tern
+ ;;   '(progn
+ ;;      (require 'tern-auto-complete)
+   ;;    (tern-ac-setup)))
   
   (require 'flycheck)
   (add-hook 'js2-mode-hook
@@ -126,6 +137,7 @@
   (setq-default flycheck-disabled-checkers
 		(append flycheck-disabled-checkers
 			'(javascript-jshint javascript-jscs)))
+  (eval-after-load 'js (define-key js-mode-map (kbd "M-.") nil))
   ;; Js2 modes error highlighting interferes with jshint/jscs, so we disable it
   (setq
    js2-mode-show-parse-errors nil
@@ -142,7 +154,10 @@
 ;; iy-goto-char
 (use-package iy-goto-char
   :bind (
-	 ("M-m" . iy-go-to-char)
+	 ("C-c f" . iy-go-to-char)
+	 ("C-c F" . iy-go-to-char-backward)
+	 ("C-c ;" . iy-go-to-or-up-to-continue)
+	 ("C-c ," . iy-go-to-or-up-to-continue-backward)
 	 )
   :config
   ;; works better with multi-cursors
@@ -158,7 +173,7 @@
 ;; Keybindings
 (global-set-key [s-return] 'counsel-projectile-find-file)
 (global-set-key [f1] 'projectile-persp-switch-project)
-(global-set-key [f2] 'balance-windows-area)
+;;(global-set-key [f2] 'balance-windows-area)
 (global-set-key [f3] 'counsel-projectile-ag)
 (global-set-key [f9] 'my-neotree-toggle)
 (global-set-key [f10] 'my-neotree-project)
@@ -216,8 +231,17 @@
 (set-face-foreground 'show-paren-match "#E0E")
 (set-face-attribute 'show-paren-match nil :weight 'bold)
 
+;; TODO: prompt if no exakt match?
+(defun find-tag-no-prompt ()
+  "Jump to the tag at point without prompting"
+  (interactive)
+  (find-tag (find-tag-default)))
+(global-set-key (kbd "M-.") 'find-tag)
+(global-set-key (kbd "M-,") 'pop-tag-mark)
+
 (toggle-scroll-bar -1)
 (tool-bar-mode -1)
+(highlight-symbol-mode 1)
 (setq initial-scratch-message nil)
 (setq inhibit-startup-screen t)
 
