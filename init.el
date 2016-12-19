@@ -110,9 +110,6 @@
     (linum-mode -1))
   (add-hook 'neo-after-create-hook 'my/neotree-hook))
 
-
-(eval-after-load 'js (define-key js-mode-map (kbd "M-.") nil))
-
 (use-package js2-mode
   :bind (
 	 ("M-." . find-tag)
