@@ -14,23 +14,18 @@
 
 (use-package default-text-scale)
 
+(use-package web-mode
+  :config
+  (add-to-list 'auto-mode-alist '("\\.jsx\\'" . web-mode))
+  )
+
 (use-package hydra
   :config
-  (defhydra hydra-git-gutter ()
-    "git-gutter"
-    ("n" git-gutter:next-hunk "next")
-    ("p" git-gutter:previous-hunk "prev")
-    ("k" git-gutter:revert-hunk "revert")
-    ("s" git-gutter:stage-hunk "stage")
-    ("m" magit-status "magit-status" :exit t)
-    ("g" git-gutter "refresh")
-    ("q" nil "quit" :exit t))
   (defhydra hydra-zoom (global-map "<f2>")
     "zoom"
     ("g" default-text-scale-increase "in")
     ("l" default-text-scale-decrease "out"))
   (global-set-key (kbd "<f2>") 'hydra-zoom/body)
-  (global-set-key (kbd "<f8>") 'hydra-git-gutter/body)
   )
 
 (use-package ivy
@@ -38,17 +33,21 @@
 	 ("M-x" . counsel-M-x)
 	 ("M-y" . counsel-yank-pop)
 	 ("C-x C-f" . counsel-find-file)
+	 ("<f3>" . counsel-projectile-ag)
 	 )
   :config
   (ivy-mode 1)
-  (setq ivy-use-virtual-buffers t))
-
+  (setq ivy-use-virtual-buffers t)
+  )
 
 (use-package highlight-symbol
-  :config
+  :ensure t
+  :init
   (require 's)
   (setq highlight-symbol-idle-delay 0.3)
-  (highlight-symbol-mode))
+  (add-hook 'prog-mode-hook
+            (lambda()
+              (highlight-symbol-mode 1))))
 
 (use-package yasnippet
   :config
@@ -62,22 +61,6 @@
 
 ;;; Load linum before git gutter to avoid conflict
 (global-linum-mode 1)
-;; Git gutter
-(use-package git-gutter
-  :config
-  (global-git-gutter-mode +1))
-
-(use-package hydra
-  :config
-  (defhydra hydra-git-gutter (global-map "C-h C-g")
-    "git-gutter"
-    ("n" git-gutter:next-hunk "next")
-    ("p" git-gutter:previous-hunk "prev")
-    ("k" git-gutter:revert-hunk "revert")
-    ("s" git-gutter:stage-hunk "stage")
-    ("m" magit-status "magit-status" :exit t)
-    ("g" git-gutter "refresh")
-    ("q" nil "quit" :exit t)))
 
 ;; Autocomplete
 (use-package auto-complete-config
@@ -92,7 +75,8 @@
 (use-package projectile
   :config
   (projectile-global-mode)
-  (setq projectile-enable-caching nil))
+  (setq projectile-enable-caching nil)
+  )
 
 (use-package persp-projectile
   :config
@@ -170,25 +154,11 @@
 ;; Keybindings
 (global-set-key [s-return] 'counsel-projectile-find-file)
 (global-set-key [f1] 'projectile-persp-switch-project)
-;;(global-set-key [f2] 'balance-windows-area)
-(global-set-key [f3] 'counsel-projectile-ag)
+(global-set-key [f8] 'magit-status)
 (global-set-key [f9] 'my-neotree-toggle)
 (global-set-key [f10] 'my-neotree-project)
 (global-set-key (kbd "C-=") 'er/expand-region)
 (global-set-key (kbd "C-x SPC") 'ace-jump-mode)
-
-
-(use-package hydra
-  :config
-  (defhydra hydra-git-gutter (global-map "C-h C-g")
-    "git"
-    ("n" git-gutter:next-hunk "next")
-    ("p" git-gutter:previous-hunk "prev")
-    ("k" git-gutter:revert-hunk "revert")
-    ("s" git-gutter:stage-hunk "stage")
-    ("m" magit-status "magit-status" :exit t)
-    ("g" git-gutter "refresh")
-    ("q" nil "quit" :exit t)))
 
 (use-package editorconfig
   :config
@@ -238,10 +208,9 @@
 
 (toggle-scroll-bar -1)
 (tool-bar-mode -1)
-(highlight-symbol-mode 1)
 (setq initial-scratch-message nil)
 (setq inhibit-startup-screen t)
-
+(setq tags-revert-without-query 1)
 ;; Right alt should not be meta key
 (when (eq system-type 'darwin)
   (setq mac-right-option-modifier 'none))
